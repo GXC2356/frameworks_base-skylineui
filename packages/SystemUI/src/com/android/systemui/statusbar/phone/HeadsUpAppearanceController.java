@@ -36,6 +36,7 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.CrossFadeHelper;
 import com.android.systemui.statusbar.HeadsUpStatusBarView;
 import com.android.systemui.statusbar.StatusBarState;
+import com.android.systemui.statusbar.logo.LogoImage;
 import com.android.systemui.statusbar.notification.NotificationWakeUpCoordinator;
 import com.android.systemui.statusbar.notification.SourceType;
 import com.android.systemui.statusbar.notification.collection.NotificationEntry;
@@ -91,6 +92,8 @@ public class HeadsUpAppearanceController extends ViewController<HeadsUpStatusBar
 
     private final View mClockView;
     private final Optional<View> mOperatorNameViewOptional;
+
+    private final LogoImage mLeftLogo;
 
     @VisibleForTesting
     float mExpandedHeight;
@@ -152,6 +155,7 @@ public class HeadsUpAppearanceController extends ViewController<HeadsUpStatusBar
         mClockView = clockView;
         mOperatorNameViewOptional = operatorNameViewOptional;
         mDarkIconDispatcher = darkIconDispatcher;
+        mLeftLogo = statusBarView.findViewById(R.id.statusbar_logo);
 
         mView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -270,8 +274,12 @@ public class HeadsUpAppearanceController extends ViewController<HeadsUpStatusBar
                 show(mView);
                 hide(mClockView, View.INVISIBLE);
                 mOperatorNameViewOptional.ifPresent(view -> hide(view, View.INVISIBLE));
+                if (mLeftLogo.getVisibility() != View.GONE)
+                    mLeftLogo.setVisibility(View.INVISIBLE);
             } else {
                 show(mClockView);
+                if (mLeftLogo.getVisibility() != View.GONE)
+                    mLeftLogo.setVisibility(View.VISIBLE);
                 mOperatorNameViewOptional.ifPresent(this::show);
                 hide(mView, View.GONE, () -> {
                     updateParentClipping(true /* shouldClip */);
